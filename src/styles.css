@@ -198,3 +198,4 @@ input, select, textarea {
 .paid-badge { margin-left: auto; font-size: 13px; font-weight: 600; color: #16a34a; }
 @media (max-width: 400px) { .tabs button { font-size: 11px; } }
 .ai-notice { border-top: 1px solid var(--line); padding-top: 8px; }
+.footer .github { display: inline-block; margin-right: 12px; font-size: 12px; color: var(--muted); }

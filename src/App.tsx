@@ -35,7 +35,7 @@ export default function App() {
           </div>
         </div>
         <button className="lang" onClick={() => setLang(lang === 'vi' ? 'en' : 'vi')}>
-          {lang === 'vi' ? '🇬🇧 EN' : '🇻🇳 VI'}
+          {lang === 'vi' ? '🇻🇳 VI' : '🇬🇧 EN'}
         </button>
       </header>
 
@@ -60,6 +60,9 @@ export default function App() {
       <footer className="footer">
         <p className="muted small">{t.disclaimer}</p>
         <p className="muted small ai-notice">{t.aiNotice}</p>
+        <a className="link github" href="https://github.com/J2TeamNNL/pay-for-me" target="_blank" rel="noopener noreferrer">
+          ⭐ {t.github}
+        </a>
         <button className="link" onClick={() => confirm(t.resetAll + '?') && dispatch({ type: 'reset' })}>
           {t.resetAll}
         </button>
