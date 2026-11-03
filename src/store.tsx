@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useReducer, type Dispatch, type ReactNode } from 'react'
 import { SEED_BILLIONAIRES, SEED_BILLS, SEED_DEBTS } from './data/seed'
+import { shuffle } from './lib/shuffle'
 import type { AppState, Debt } from './types'
 
 const STORAGE_KEY = 'pfm-state-v2'
@@ -14,7 +15,7 @@ type Action =
   | { type: 'reset' }
 
 const initialState = (): AppState => ({
-  debts: SEED_DEBTS,
+  debts: shuffle(SEED_DEBTS),
   billionaires: SEED_BILLIONAIRES,
   payments: [],
   skipped: [],
@@ -29,10 +30,10 @@ function hydrate(saved: Partial<AppState>): AppState {
   const savedNetWorth = new Map((saved.billionaires ?? []).map((b) => [b.id, b.netWorth]))
   return {
     ...base,
-    debts: [
+    debts: shuffle([
       ...(saved.debts ?? []).filter((d) => d.userPosted),
       ...base.debts.map((d) => ({ ...d, paidBy: savedDebts.get(d.id)?.paidBy })),
-    ],
+    ]),
     billionaires: base.billionaires.map((b) => ({ ...b, netWorth: savedNetWorth.get(b.id) ?? b.netWorth })),
     payments: saved.payments ?? [],
     skipped: saved.skipped ?? [],

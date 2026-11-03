@@ -6,6 +6,9 @@ import { Avatar } from './Avatar'
 
 const SWIPE_THRESHOLD = 120
 const REGION_FLAG = { vn: '🇻🇳', asia: '🌏', world: '🌍' } as const
+const cardVariants = {
+  exit: (dir: 'left' | 'right') => ({ x: dir === 'left' ? -600 : 600, opacity: 0, transition: { duration: 0.3 } }),
+}
 
 interface Props {
   debt: Debt
@@ -38,7 +41,8 @@ export function DebtCard({ debt: raw, isTop, onSwipe }: Props) {
       onDragEnd={handleDragEnd}
       initial={{ scale: isTop ? 1 : 0.94, y: isTop ? 0 : 14 }}
       animate={{ scale: isTop ? 1 : 0.94, y: isTop ? 0 : 14 }}
-      exit={{ x: x.get() >= 0 ? 600 : -600, opacity: 0, transition: { duration: 0.3 } }}
+      variants={cardVariants}
+      exit="exit"
     >
       <motion.div className="stamp stamp-pay" style={{ opacity: payOpacity }}>PAY</motion.div>
       <motion.div className="stamp stamp-nope" style={{ opacity: nopeOpacity }}>NOPE</motion.div>

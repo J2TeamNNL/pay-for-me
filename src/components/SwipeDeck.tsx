@@ -14,6 +14,7 @@ export function SwipeDeck() {
   const payer = useActiveBillionaire()
   const [match, setMatch] = useState<Debt | null>(null)
   const [toast, setToast] = useState<string | null>(null)
+  const [exitDir, setExitDir] = useState<'left' | 'right'>('right')
 
   const queue = useMemo(
     () => state.debts.filter((d) => !d.paidBy && !state.skipped.includes(d.id)),
@@ -21,6 +22,7 @@ export function SwipeDeck() {
   )
 
   const swipe = (debt: Debt, dir: 'left' | 'right') => {
+    setExitDir(dir)
     if (dir === 'left') return dispatch({ type: 'skip', debtId: debt.id })
     if (payer.netWorth < debt.amount) {
       setToast(t.broke)
@@ -37,7 +39,7 @@ export function SwipeDeck() {
   return (
     <section className="deck-wrap">
       <div className="deck">
-        <AnimatePresence>
+        <AnimatePresence custom={exitDir}>
           {queue
             .slice(0, 2)
             .reverse()

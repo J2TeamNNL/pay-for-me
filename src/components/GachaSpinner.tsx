@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { SEED_BILLS } from '../data/seed'
 import { CATEGORY_META, formatVnd, useLang, useLocalize } from '../i18n'
 import { buildPool, createSpin, RARITY_COLOR, spinProgress, type GachaItem } from '../lib/gacha'
+import { shuffle } from '../lib/shuffle'
 import { playOpen, playReveal, playTick, preloadSounds } from '../lib/sfx'
 import { useActiveBillionaire, useStore } from '../store'
 import { Avatar } from './Avatar'
@@ -47,6 +48,7 @@ export function GachaSpinner() {
     () => buildPool(state.debts.filter((d) => !d.paidBy), SEED_BILLS.filter((b) => !state.paidBills.includes(b.id))),
     [state.debts, state.paidBills],
   )
+  const idleReel = useMemo(() => shuffle(pool).slice(0, 8), [pool])
 
   useEffect(() => () => cancelAnimationFrame(frameRef.current), [])
 
@@ -118,7 +120,7 @@ export function GachaSpinner() {
       <div className="reel" ref={viewportRef}>
         <div className="reel-marker" />
         <div className="reel-strip" ref={stripRef}>
-          {(spin?.reel ?? pool.slice(0, 8)).map((item, i) => (
+          {(spin?.reel ?? idleReel).map((item, i) => (
             <Tile key={`${item.id}-${i}`} item={item} />
           ))}
         </div>

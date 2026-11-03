@@ -1,9 +1,10 @@
 import confetti from 'canvas-confetti'
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { CATEGORY_META, formatVnd, useLang, useLocalize } from '../i18n'
 import { useActiveBillionaire, useStore } from '../store'
 import type { Debt, Region } from '../types'
 import { Avatar } from './Avatar'
+import { DebtDetailModal } from './DebtDetailModal'
 
 type RegionFilter = 'all' | Region
 type StatusFilter = 'all' | 'unpaid' | 'paid'
@@ -37,6 +38,10 @@ export function DebtorList() {
       .filter((d) => !q || d.debtor.toLowerCase().includes(q) || d.story.toLowerCase().includes(q))
       .sort(SORTERS[sort])
   }, [state.debts, L, query, region, status, sort])
+
+  const openedRaw = openId ? state.debts.find((d) => d.id === openId) : undefined
+  const opened = openedRaw && L.debt(openedRaw)
+  const closeDetail = useCallback(() => setOpenId(null), [])
 
   const total = debts.filter((d) => !d.paidBy).reduce((s, d) => s + d.amount, 0)
   const payerName = (id: string) => L.billionaire(state.billionaires.find((b) => b.id === id) ?? payer).name
@@ -79,9 +84,15 @@ export function DebtorList() {
       <ul className="debtor-grid">
         {debts.map((d) => {
           const cat = CATEGORY_META[d.category]
-          const open = openId === d.id
           return (
-            <li key={d.id} className={`panel debtor ${d.paidBy ? 'is-paid' : ''}`}>
+            <li
+              key={d.id}
+              className={`panel debtor ${d.paidBy ? 'is-paid' : ''}`}
+              role="button"
+              tabIndex={0}
+              onClick={() => setOpenId(d.id)}
+              onKeyDown={(e) => e.key === 'Enter' && setOpenId(d.id)}
+            >
               <div className="debtor-head">
                 <Avatar image={d.image} emoji={d.avatar} size={56} />
                 <div className="grow">
@@ -95,17 +106,18 @@ export function DebtorList() {
                 <span className="debtor-amount">{formatVnd(d.amount, lang)}</span>
               </div>
               <p className="story">“{d.story}”</p>
-              {open && d.bio && <p className="bio">{d.bio}</p>}
               <div className="debtor-actions">
-                {d.bio && (
-                  <button className="bio-toggle" onClick={() => setOpenId(open ? null : d.id)}>
-                    {open ? '▲' : '▼'} {t.bio}
-                  </button>
-                )}
+                <span className="muted small">{t.viewDetail} →</span>
                 {d.paidBy ? (
                   <span className="paid-badge">✅ {t.paidByLabel(payerName(d.paidBy))}</span>
                 ) : (
-                  <button className="btn btn-pay btn-sm" onClick={() => pay(d)}>
+                  <button
+                    className="btn btn-pay btn-sm"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      pay(d)
+                    }}
+                  >
                     {t.pay}
                   </button>
                 )}
@@ -114,6 +126,15 @@ export function DebtorList() {
           )
         })}
       </ul>
+
+      {opened && (
+        <DebtDetailModal
+          debt={opened}
+          paidByName={opened.paidBy && payerName(opened.paidBy)}
+          onPay={() => pay(opened)}
+          onClose={closeDetail}
+        />
+      )}
     </section>
   )
 }
