@@ -63,7 +63,7 @@ export default function App() {
         <a className="link github" href="https://github.com/J2TeamNNL/pay-for-me" target="_blank" rel="noopener noreferrer">
           ⭐ {t.github}
         </a>
-        <button className="link" onClick={() => confirm(t.resetAll + '?') && dispatch({ type: 'reset' })}>
+        <button className="rebirth" onClick={() => confirm(t.resetConfirm) && dispatch({ type: 'reset' })}>
           {t.resetAll}
         </button>
       </footer>
