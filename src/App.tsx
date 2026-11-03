@@ -59,6 +59,7 @@ export default function App() {
 
       <footer className="footer">
         <p className="muted small">{t.disclaimer}</p>
+        <p className="muted small ai-notice">{t.aiNotice}</p>
         <button className="link" onClick={() => confirm(t.resetAll + '?') && dispatch({ type: 'reset' })}>
           {t.resetAll}
         </button>

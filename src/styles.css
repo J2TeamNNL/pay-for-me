@@ -197,3 +197,4 @@ input, select, textarea {
 .btn-sm { flex: 0 0 auto; padding: 8px 16px; font-size: 13px; margin-left: auto; }
 .paid-badge { margin-left: auto; font-size: 13px; font-weight: 600; color: #16a34a; }
 @media (max-width: 400px) { .tabs button { font-size: 11px; } }
+.ai-notice { border-top: 1px solid var(--line); padding-top: 8px; }

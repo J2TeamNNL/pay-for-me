@@ -59,3 +59,5 @@ Vite, React 19, TypeScript, framer-motion, canvas-confetti, Cloudflare Workers. 
 - Cơ chế quay gacha tham khảo từ [truanayangi](https://github.com/truanayangi-com/truanayangi).
 - Âm thanh mở hộp lấy từ [sourcesounds/csgo](https://github.com/sourcesounds/csgo). Bản quyền âm thanh thuộc Valve và các chủ sở hữu tương ứng.
 - Mọi tên nhân vật đều là tên chế, chỉ nhằm mục đích giải trí.
+
+> Toàn bộ nội dung, nhân vật, hình ảnh và code đều do AI tạo ra. Tên nhân vật là tên chế, không nhắm tới bất kỳ ai ngoài đời thật. Tác giả từ chối mọi trách nhiệm phát sinh từ nội dung này.
