@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Avatar } from './components/Avatar'
+import { DebtorList } from './components/DebtorList'
 import { GachaSpinner } from './components/GachaSpinner'
 import { Leaderboard } from './components/Leaderboard'
 import { PersonaBar } from './components/PersonaBar'
@@ -8,7 +9,7 @@ import { SwipeDeck } from './components/SwipeDeck'
 import { useLang } from './i18n'
 import { useStore } from './store'
 
-type Tab = 'swipe' | 'gacha' | 'post' | 'board'
+type Tab = 'swipe' | 'gacha' | 'list' | 'post' | 'board'
 
 export default function App() {
   const { lang, t, setLang } = useLang()
@@ -18,6 +19,7 @@ export default function App() {
   const tabs: { id: Tab; label: string }[] = [
     { id: 'swipe', label: `🔥 ${t.tabSwipe}` },
     { id: 'gacha', label: `🎰 ${t.tabGacha}` },
+    { id: 'list', label: `📋 ${t.tabList}` },
     { id: 'post', label: `📝 ${t.tabPost}` },
     { id: 'board', label: `🏆 ${t.tabBoard}` },
   ]
@@ -50,6 +52,7 @@ export default function App() {
       <main>
         {tab === 'swipe' && <SwipeDeck />}
         {tab === 'gacha' && <GachaSpinner />}
+        {tab === 'list' && <DebtorList />}
         {tab === 'post' && <PostDebtForm onPosted={() => setTab('swipe')} />}
         {tab === 'board' && <Leaderboard />}
       </main>

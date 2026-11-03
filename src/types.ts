@@ -18,6 +18,7 @@ export interface Debt {
   story: string
   createdAt: number
   paidBy?: string
+  userPosted?: boolean
 }
 
 export interface Billionaire {

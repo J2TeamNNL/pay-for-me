@@ -22,10 +22,29 @@ const initialState = (): AppState => ({
   activeBillionaireId: SEED_BILLIONAIRES[0].id,
 })
 
+// Seed content always comes from code; storage only restores player progress and user-posted debts.
+function hydrate(saved: Partial<AppState>): AppState {
+  const base = initialState()
+  const savedDebts = new Map((saved.debts ?? []).map((d) => [d.id, d]))
+  const savedNetWorth = new Map((saved.billionaires ?? []).map((b) => [b.id, b.netWorth]))
+  return {
+    ...base,
+    debts: [
+      ...(saved.debts ?? []).filter((d) => d.userPosted),
+      ...base.debts.map((d) => ({ ...d, paidBy: savedDebts.get(d.id)?.paidBy })),
+    ],
+    billionaires: base.billionaires.map((b) => ({ ...b, netWorth: savedNetWorth.get(b.id) ?? b.netWorth })),
+    payments: saved.payments ?? [],
+    skipped: saved.skipped ?? [],
+    paidBills: saved.paidBills ?? [],
+    activeBillionaireId: base.billionaires.some((b) => b.id === saved.activeBillionaireId) ? saved.activeBillionaireId! : base.activeBillionaireId,
+  }
+}
+
 function load(): AppState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? { ...initialState(), ...JSON.parse(raw) } : initialState()
+    return raw ? hydrate(JSON.parse(raw)) : initialState()
   } catch {
     return initialState()
   }
@@ -58,7 +77,7 @@ function reducer(state: AppState, action: Action): AppState {
     case 'skip':
       return { ...state, skipped: [...state.skipped, action.debtId] }
     case 'post':
-      return { ...state, debts: [{ ...action.debt, id: crypto.randomUUID(), createdAt: Date.now() }, ...state.debts] }
+      return { ...state, debts: [{ ...action.debt, id: crypto.randomUUID(), createdAt: Date.now(), userPosted: true }, ...state.debts] }
     case 'selectBillionaire':
       return { ...state, activeBillionaireId: action.id }
     case 'clearSkipped':

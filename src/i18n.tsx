@@ -1,5 +1,6 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
-import type { DebtCategory, Lang } from './types'
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { BILLIONAIRES_EN, BILLS_EN, DEBTS_EN } from './data/seed-en'
+import type { Bill, Billionaire, Debt, DebtCategory, Lang } from './types'
 
 const dict = {
   vi: {
@@ -37,6 +38,19 @@ const dict = {
     ageSuffix: 'tuổi',
     bio: 'Tiểu sử',
     tabGacha: 'Quay nợ',
+    tabList: 'Danh sách',
+    listSearch: 'Tìm con nợ hoặc câu chuyện...',
+    listAllRegions: 'Mọi khu vực',
+    listAllStatus: 'Mọi trạng thái',
+    listUnpaid: 'Chưa ai trả',
+    listPaid: 'Đã được trả',
+    sortAmountDesc: 'Nợ nhiều nhất',
+    sortAmountAsc: 'Nợ ít nhất',
+    sortNewest: 'Mới đăng',
+    listSummary: (n: number, total: string) => `${n} con nợ · còn treo ${total}`,
+    listEmpty: 'Không tìm thấy con nợ nào.',
+    paidByLabel: (name: string) => `${name} đã trả`,
+    region: { vn: 'Việt Nam', asia: 'Châu Á', world: 'Thế giới' },
     gachaTitle: 'Hộp Nợ Bí Ẩn',
     gachaDesc: 'Quay ngẫu nhiên ra một con nợ hoặc một hóa đơn. Ra gì trả nấy, tỷ phú không được kén.',
     gachaSpin: 'Mở hộp 🎰',
@@ -83,6 +97,19 @@ const dict = {
     ageSuffix: 'y/o',
     bio: 'Backstory',
     tabGacha: 'Debt gacha',
+    tabList: 'Debtors',
+    listSearch: 'Search debtors or stories...',
+    listAllRegions: 'All regions',
+    listAllStatus: 'All statuses',
+    listUnpaid: 'Unpaid',
+    listPaid: 'Paid off',
+    sortAmountDesc: 'Biggest debt',
+    sortAmountAsc: 'Smallest debt',
+    sortNewest: 'Newest',
+    listSummary: (n: number, total: string) => `${n} debtors · ${total} still unpaid`,
+    listEmpty: 'No debtors found.',
+    paidByLabel: (name: string) => `Paid by ${name}`,
+    region: { vn: 'Vietnam', asia: 'Asia', world: 'World' },
     gachaTitle: 'Mystery Debt Case',
     gachaDesc: 'Spin for a random debtor or bill. Whatever drops, you pay. No refunds.',
     gachaSpin: 'Open case 🎰',
@@ -126,3 +153,16 @@ export function useLang() {
 
 export const formatVnd = (n: number, lang: Lang) =>
   new Intl.NumberFormat(lang === 'vi' ? 'vi-VN' : 'en-US', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(n)
+
+export function useLocalize() {
+  const { lang } = useLang()
+  return useMemo(() => {
+    const pick = <T extends { id: string }>(item: T, table: Record<string, object>): T =>
+      lang === 'en' && table[item.id] ? { ...item, ...table[item.id] } : item
+    return {
+      debt: (d: Debt) => pick(d, DEBTS_EN),
+      billionaire: (b: Billionaire) => pick(b, BILLIONAIRES_EN),
+      bill: (b: Bill) => pick(b, BILLS_EN),
+    }
+  }, [lang])
+}

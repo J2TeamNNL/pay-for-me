@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, useMotionValue, useTransform, type PanInfo } from 'framer-motion'
-import { CATEGORY_META, formatVnd, useLang } from '../i18n'
+import { CATEGORY_META, formatVnd, useLang, useLocalize } from '../i18n'
 import type { Debt } from '../types'
 import { Avatar } from './Avatar'
 
@@ -13,8 +13,9 @@ interface Props {
   onSwipe: (dir: 'left' | 'right') => void
 }
 
-export function DebtCard({ debt, isTop, onSwipe }: Props) {
+export function DebtCard({ debt: raw, isTop, onSwipe }: Props) {
   const { lang, t } = useLang()
+  const debt = useLocalize().debt(raw)
   const x = useMotionValue(0)
   const rotate = useTransform(x, [-300, 300], [-18, 18])
   const payOpacity = useTransform(x, [20, SWIPE_THRESHOLD], [0, 1])

@@ -1,12 +1,13 @@
 import { useState } from 'react'
-import { formatVnd, useLang } from '../i18n'
+import { formatVnd, useLang, useLocalize } from '../i18n'
 import { useActiveBillionaire, useStore } from '../store'
 import { Avatar } from './Avatar'
 
 export function PersonaBar() {
   const { state, dispatch } = useStore()
   const { lang, t } = useLang()
-  const active = useActiveBillionaire()
+  const L = useLocalize()
+  const active = L.billionaire(useActiveBillionaire())
   const [open, setOpen] = useState(false)
 
   return (
@@ -22,7 +23,7 @@ export function PersonaBar() {
       </button>
       {open && (
         <ul className="persona-list">
-          {state.billionaires.map((b) => (
+          {state.billionaires.map(L.billionaire).map((b) => (
             <li key={b.id}>
               <button
                 className={b.id === active.id ? 'active' : ''}

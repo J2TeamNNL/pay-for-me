@@ -14,6 +14,7 @@ Web troll lấy cảm hứng từ ý tưởng "app để tỷ phú vào trả n�
 - **Quay nợ:** mở hộp kiểu CS:GO, ra ngẫu nhiên một con nợ hoặc một hóa đơn, có 4 độ hiếm từ Thường tới Huyền thoại.
 - **Đăng nợ:** tự đăng khoản nợ của mình kèm câu chuyện bi thảm.
 - **Chế độ tỷ phú:** nhập vai tỷ phú phiên bản chế (Elon Mút, Jeff Bé Zô...), số dư ảo bị trừ sau mỗi lần trả.
+- **Danh sách:** xem toàn bộ con nợ, tìm kiếm, lọc theo khu vực và trạng thái.
 - **Bảng vàng:** xếp hạng tỷ phú hào phóng nhất và con nợ được cứu.
 - Song ngữ Việt/Anh, không cần đăng nhập. Dữ liệu lưu trong `localStorage` của trình duyệt.
 
@@ -42,6 +43,7 @@ npm run deploy
 | `src/store.tsx` | State toàn app (reducer) và lưu vào `localStorage` |
 | `src/i18n.tsx` | Từ điển Việt/Anh, định dạng tiền VND |
 | `src/data/seed.ts` | Dữ liệu mẫu: con nợ, tỷ phú, hóa đơn |
+| `src/data/seed-en.ts` | Bản dịch tiếng Anh của dữ liệu mẫu, khớp theo `id` |
 | `src/lib/gacha.ts` | Bốc thăm theo độ hiếm và dựng dải ô quay |
 | `src/lib/sfx.ts` | Phát âm thanh qua Web Audio |
 | `src/components/` | Thẻ vuốt, vòng quay, form, bảng vàng, chọn tỷ phú |

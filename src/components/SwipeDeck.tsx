@@ -1,7 +1,7 @@
 import confetti from 'canvas-confetti'
 import { AnimatePresence } from 'framer-motion'
 import { useMemo, useState } from 'react'
-import { formatVnd, useLang } from '../i18n'
+import { formatVnd, useLang, useLocalize } from '../i18n'
 import { useActiveBillionaire, useStore } from '../store'
 import type { Debt } from '../types'
 import { DebtCard } from './DebtCard'
@@ -10,6 +10,7 @@ import { MatchModal } from './MatchModal'
 export function SwipeDeck() {
   const { state, dispatch } = useStore()
   const { lang, t } = useLang()
+  const L = useLocalize()
   const payer = useActiveBillionaire()
   const [match, setMatch] = useState<Debt | null>(null)
   const [toast, setToast] = useState<string | null>(null)
@@ -75,7 +76,7 @@ export function SwipeDeck() {
         <MatchModal
           debt={match}
           payer={payer}
-          text={t.matchDesc(payer.name, match.debtor, formatVnd(match.amount, lang))}
+          text={t.matchDesc(L.billionaire(payer).name, L.debt(match).debtor, formatVnd(match.amount, lang))}
           onClose={() => setMatch(null)}
         />
       )}

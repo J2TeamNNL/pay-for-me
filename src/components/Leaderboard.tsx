@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { formatVnd, useLang } from '../i18n'
+import { formatVnd, useLang, useLocalize } from '../i18n'
 import { useStore } from '../store'
 import { Avatar } from './Avatar'
 
@@ -8,6 +8,7 @@ const MEDALS = ['🥇', '🥈', '🥉']
 export function Leaderboard() {
   const { state } = useStore()
   const { lang, t } = useLang()
+  const L = useLocalize()
 
   const givers = useMemo(() => {
     const totals = new Map<string, { total: number; count: number }>()
@@ -16,19 +17,20 @@ export function Leaderboard() {
       totals.set(p.billionaireId, { total: cur.total + p.amount, count: cur.count + 1 })
     }
     return state.billionaires
+      .map(L.billionaire)
       .filter((b) => totals.has(b.id))
       .map((b) => ({ ...b, ...totals.get(b.id)! }))
       .sort((a, b) => b.total - a.total)
-  }, [state.payments, state.billionaires])
+  }, [state.payments, state.billionaires, L])
 
   const rescued = useMemo(
-    () => state.debts.filter((d) => d.paidBy).sort((a, b) => b.amount - a.amount),
-    [state.debts],
+    () => state.debts.filter((d) => d.paidBy).map(L.debt).sort((a, b) => b.amount - a.amount),
+    [state.debts, L],
   )
 
   if (!givers.length) return <div className="panel center"><div className="empty-emoji">🦗</div><p>{t.boardEmpty}</p></div>
 
-  const nameOf = (id?: string) => state.billionaires.find((b) => b.id === id)?.name ?? '?'
+  const nameOf = (id?: string) => givers.find((b) => b.id === id)?.name ?? '?'
 
   return (
     <div className="board">

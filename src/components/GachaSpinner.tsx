@@ -1,7 +1,7 @@
 import confetti from 'canvas-confetti'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { SEED_BILLS } from '../data/seed'
-import { CATEGORY_META, formatVnd, useLang } from '../i18n'
+import { CATEGORY_META, formatVnd, useLang, useLocalize } from '../i18n'
 import { buildPool, createSpin, RARITY_COLOR, spinProgress, type GachaItem } from '../lib/gacha'
 import { playOpen, playReveal, playTick, preloadSounds } from '../lib/sfx'
 import { useActiveBillionaire, useStore } from '../store'
@@ -9,7 +9,8 @@ import { Avatar } from './Avatar'
 
 const TILE = 132
 
-function Tile({ item }: { item: GachaItem }) {
+function Tile({ item: raw }: { item: GachaItem }) {
+  const item = localizeItem(raw, useLocalize())
   const style = { borderBottomColor: RARITY_COLOR[item.rarity] }
   if (item.kind === 'debt') {
     return (
@@ -27,15 +28,19 @@ function Tile({ item }: { item: GachaItem }) {
   )
 }
 
+const localizeItem = (item: GachaItem, L: ReturnType<typeof useLocalize>): GachaItem =>
+   item.kind === 'debt' ? { ...item, debt: L.debt(item.debt) } : { ...item, bill: L.bill(item.bill) }
+
 export function GachaSpinner() {
   const { state, dispatch } = useStore()
   const { lang, t } = useLang()
+  const L = useLocalize()
   const payer = useActiveBillionaire()
   const viewportRef = useRef<HTMLDivElement>(null)
   const stripRef = useRef<HTMLDivElement>(null)
   const frameRef = useRef(0)
   const [spin, setSpin] = useState<ReturnType<typeof createSpin> | null>(null)
-  const [result, setResult] = useState<GachaItem | null>(null)
+  const [rawResult, setResult] = useState<GachaItem | null>(null)
   const [toast, setToast] = useState<string | null>(null)
 
   const pool = useMemo(
@@ -86,6 +91,7 @@ export function GachaSpinner() {
     }
   }
 
+  const result = rawResult && localizeItem(rawResult, L)
   const amount = result ? (result.kind === 'debt' ? result.debt.amount : result.bill.amount) : 0
   const paid = result ? (result.kind === 'debt' ? !!state.debts.find((d) => d.id === result.id)?.paidBy : state.paidBills.includes(result.id)) : false
 
