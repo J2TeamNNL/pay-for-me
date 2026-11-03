@@ -1,0 +1,128 @@
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import type { DebtCategory, Lang } from './types'
+
+const dict = {
+  vi: {
+    tagline: 'Tinder cho con nợ. Tỷ phú vuốt phải, nợ bay màu.',
+    tabSwipe: 'Vuốt nợ',
+    tabPost: 'Đăng nợ',
+    tabBoard: 'Bảng vàng',
+    youAre: 'Bạn đang là',
+    balance: 'Số dư',
+    switchPersona: 'Đổi tỷ phú',
+    pay: 'Trả hộ 💸',
+    skip: 'Thôi, nghèo đi 👋',
+    emptyTitle: 'Hết nợ để trả rồi!',
+    emptyDesc: 'Thế giới tạm thời không còn ai nghèo. Hoặc bạn đã lướt qua hết.',
+    resetSkipped: 'Xem lại những khoản đã bỏ qua',
+    matchTitle: "It's a Debt Match! 💘",
+    matchDesc: (b: string, d: string, a: string) => `${b} vừa trả ${a} cho ${d}. Giàu thì giàu mà tim cũng ấm.`,
+    matchClose: 'Vuốt tiếp nào',
+    broke: 'Tỷ phú này hết tiền rồi 🫠 Đổi người khác đi.',
+    formTitle: 'Đăng khoản nợ của bạn',
+    formName: 'Tên (hoặc biệt danh khốn khổ)',
+    formAge: 'Tuổi',
+    formCategory: 'Loại nợ',
+    formAmount: 'Số tiền (VND)',
+    formStory: 'Câu chuyện bi thảm (càng thảm càng dễ match)',
+    formAvatar: 'Emoji đại diện',
+    formSubmit: 'Đăng lên chợ nợ',
+    formDone: 'Đã đăng! Giờ ngồi chờ tỷ phú buồn chán ghé qua.',
+    boardGiver: 'Tỷ phú hào phóng nhất',
+    boardDebtor: 'Con nợ được cứu',
+    boardEmpty: 'Chưa ai trả nợ cho ai. Vuốt đi!',
+    paidCount: (n: number) => `${n} khoản`,
+    resetAll: 'Reset dữ liệu',
+    disclaimer: 'Web troll / parody. Không có tiền thật, không liên quan tới tỷ phú thật nào. Đừng gửi nợ thật lên đây 🙏',
+    ageSuffix: 'tuổi',
+    bio: 'Tiểu sử',
+    tabGacha: 'Quay nợ',
+    gachaTitle: 'Hộp Nợ Bí Ẩn',
+    gachaDesc: 'Quay ngẫu nhiên ra một con nợ hoặc một hóa đơn. Ra gì trả nấy, tỷ phú không được kén.',
+    gachaSpin: 'Mở hộp 🎰',
+    gachaSpinning: 'Đang quay...',
+    gachaPayDebt: 'Trả cho con nợ này',
+    gachaPayBill: 'Thanh toán hóa đơn',
+    gachaAgain: 'Quay tiếp',
+    gachaPaid: 'Đã trả ✅',
+    gachaEmpty: 'Hết thứ để quay rồi.',
+    rarity: { common: 'Thường', rare: 'Hiếm', epic: 'Sử thi', legendary: 'Huyền thoại' },
+  },
+  en: {
+    tagline: 'Tinder for debtors. Billionaires swipe right, debts vanish.',
+    tabSwipe: 'Swipe',
+    tabPost: 'Post debt',
+    tabBoard: 'Hall of fame',
+    youAre: 'You are',
+    balance: 'Balance',
+    switchPersona: 'Switch billionaire',
+    pay: 'Pay it 💸',
+    skip: 'Stay poor 👋',
+    emptyTitle: 'No debts left!',
+    emptyDesc: 'Poverty is temporarily solved. Or you just swiped through everyone.',
+    resetSkipped: 'Review skipped debts',
+    matchTitle: "It's a Debt Match! 💘",
+    matchDesc: (b: string, d: string, a: string) => `${b} just paid ${a} for ${d}. Rich and warm-hearted.`,
+    matchClose: 'Keep swiping',
+    broke: 'This billionaire is broke 🫠 Pick another one.',
+    formTitle: 'Post your debt',
+    formName: 'Name (or tragic nickname)',
+    formAge: 'Age',
+    formCategory: 'Debt type',
+    formAmount: 'Amount (VND)',
+    formStory: 'Sob story (sadder = more matches)',
+    formAvatar: 'Avatar emoji',
+    formSubmit: 'List on the debt market',
+    formDone: 'Posted! Now wait for a bored billionaire.',
+    boardGiver: 'Most generous billionaires',
+    boardDebtor: 'Rescued debtors',
+    boardEmpty: 'Nobody paid anyone yet. Go swipe!',
+    paidCount: (n: number) => `${n} debts`,
+    resetAll: 'Reset data',
+    disclaimer: 'Parody site. No real money, not affiliated with any real billionaire. Please do not post real debts 🙏',
+    ageSuffix: 'y/o',
+    bio: 'Backstory',
+    tabGacha: 'Debt gacha',
+    gachaTitle: 'Mystery Debt Case',
+    gachaDesc: 'Spin for a random debtor or bill. Whatever drops, you pay. No refunds.',
+    gachaSpin: 'Open case 🎰',
+    gachaSpinning: 'Spinning...',
+    gachaPayDebt: 'Pay this debtor',
+    gachaPayBill: 'Pay this bill',
+    gachaAgain: 'Spin again',
+    gachaPaid: 'Paid ✅',
+    gachaEmpty: 'Nothing left to spin.',
+    rarity: { common: 'Common', rare: 'Rare', epic: 'Epic', legendary: 'Legendary' },
+  },
+}
+
+export const CATEGORY_META: Record<DebtCategory, { icon: string; vi: string; en: string }> = {
+  electric: { icon: '⚡', vi: 'Tiền điện', en: 'Electric bill' },
+  medical: { icon: '🏥', vi: 'Viện phí', en: 'Medical' },
+  rent: { icon: '🏠', vi: 'Tiền nhà', en: 'Rent' },
+  credit: { icon: '💳', vi: 'Thẻ tín dụng', en: 'Credit card' },
+  milktea: { icon: '🧋', vi: 'Trà sữa', en: 'Bubble tea' },
+  other: { icon: '🤡', vi: 'Khác', en: 'Other' },
+}
+
+type Dict = (typeof dict)['vi']
+
+const LangContext = createContext<{ lang: Lang; t: Dict; setLang: (l: Lang) => void } | null>(null)
+
+export function LangProvider({ children }: { children: ReactNode }) {
+  const [lang, setLang] = useState<Lang>(() => (localStorage.getItem('pfm-lang') as Lang) || 'vi')
+  useEffect(() => {
+    localStorage.setItem('pfm-lang', lang)
+    document.documentElement.lang = lang
+  }, [lang])
+  return <LangContext.Provider value={{ lang, t: dict[lang], setLang }}>{children}</LangContext.Provider>
+}
+
+export function useLang() {
+  const ctx = useContext(LangContext)
+  if (!ctx) throw new Error('useLang must be used inside LangProvider')
+  return ctx
+}
+
+export const formatVnd = (n: number, lang: Lang) =>
+  new Intl.NumberFormat(lang === 'vi' ? 'vi-VN' : 'en-US', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(n)

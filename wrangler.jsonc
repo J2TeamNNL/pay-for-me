@@ -1,0 +1,12 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pay-for-me",
+  "compatibility_date": "2026-11-02",
+  "observability": {
+    "enabled": true
+  },
+  "assets": {
+    "not_found_handling": "single-page-application"
+  },
+  "routes": [{ "pattern": "pay.j2teamnnl.com", "custom_domain": true }]
+}
